@@ -1,0 +1,7 @@
+[package]
+name = "mylisp"
+version = "0.1.0"
+authors = ["Jacob Hughes <exrook.j@gmail.com>"]
+
+[dependencies]
+unicode-segmentation = "0.1.2"
