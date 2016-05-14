@@ -18,6 +18,7 @@ enum LexState {
     Token(String),
     String(String),
     Number(String, bool),
+    Comment
 }
 
 pub fn lex(s: &str) -> Vec<LexElement> {
@@ -25,27 +26,41 @@ pub fn lex(s: &str) -> Vec<LexElement> {
     let mut state = LexState::Normal;
     for c in UnicodeSegmentation::graphemes(s,true) {
         // println!("{:?},[{}]", state, c);
-        match state {
+        state = match state {
+            LexState::Comment => {
+                match c {
+                    _ if is_newline(c) => {
+                        LexState::Normal
+                    }
+                    _ => {
+                        LexState::Comment
+                    }
+                }
+            }
             LexState::Normal => {
                 match c {
                     "(" => {
                         lex_stack.push(LexElement::OpenParen);
-                        state = LexState::Normal;
+                        LexState::Normal
                     }
                     ")" => {
                         lex_stack.push(LexElement::CloseParen);
+                        LexState::Normal
                     }
                     "\"" => {
-                        state = LexState::String(String::new());
+                        LexState::String(String::new())
                     }
                     _ if is_number(c) => {
-                        state = LexState::Number(String::from(c), false);
+                        LexState::Number(String::from(c), false)
                     }
                     _ if is_whitespace(c) => {
-                        state = LexState::Normal;
+                        LexState::Normal
+                    }
+                    "#" => {
+                        LexState::Comment
                     }
                     _ => {
-                        state = LexState::Token(String::from(c));
+                        LexState::Token(String::from(c))
                     }
                 }
             }
@@ -53,11 +68,11 @@ pub fn lex(s: &str) -> Vec<LexElement> {
                 match c {
                     "\"" => {
                         lex_stack.push(LexElement::String(string));
-                        state = LexState::Normal;
+                        LexState::Normal
                     }
                     _ => {
                         string.push_str(c);
-                        state = LexState::String(string);
+                        LexState::String(string)
                     }
                 }
             }
@@ -65,11 +80,11 @@ pub fn lex(s: &str) -> Vec<LexElement> {
                 match c {
                     _ if is_number(c) => {
                         string.push_str(c);
-                        state = LexState::Number(string, float);
+                        LexState::Number(string, float)
                     }
                     "." if !float => {
                         string.push_str(c);
-                        state = LexState::Number(string, true);
+                        LexState::Number(string, true)
                     }
                     c => {
                         lex_stack.push(match float {
@@ -86,10 +101,10 @@ pub fn lex(s: &str) -> Vec<LexElement> {
                             ")" => {
                                 // lex_stack.
                                 lex_stack.push(LexElement::CloseParen);
-                                state = LexState::Normal;
+                                LexState::Normal
                             }
                             _ if is_whitespace(c) => {
-                                state = LexState::Normal;
+                                LexState::Normal
                             }
                             _ => {
                                 panic!("Parse Error, invalid token following number");
@@ -103,18 +118,22 @@ pub fn lex(s: &str) -> Vec<LexElement> {
                     ")" => {
                         lex_stack.push(LexElement::Token(string));
                         lex_stack.push(LexElement::CloseParen);
-                        state = LexState::Normal;
+                        LexState::Normal
                     }
                     "\"" => {
                         panic!("\" Not allowed in tokens");
                     }
                     _ if is_whitespace(c) => {
                         lex_stack.push(LexElement::Token(string));
-                        state = LexState::Normal;
+                        LexState::Normal
+                    }
+                    "#" => {
+                        lex_stack.push(LexElement::Token(string));
+                        LexState::Comment
                     }
                     _ => {
                         string.push_str(c);
-                        state = LexState::Token(string);
+                        LexState::Token(string)
                     }
                 }
             }
@@ -143,7 +162,18 @@ fn is_whitespace(c: &str) -> bool {
     match c {
         " " => true,
         "\t" => true,
+        _ if is_newline(c) => true,
+        // "\n" => true,
+        // "\r" => true,
+        // "\r\n" => true,
+        _ => false
+    }
+}
+
+fn is_newline(c: &str) -> bool {
+    match c {
         "\n" => true,
+        "\r" => true,
         "\r\n" => true,
         _ => false
     }
