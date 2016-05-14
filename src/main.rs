@@ -28,31 +28,8 @@ fn main() {
     }
     print!("File: \n{}", file_string);
     print!("Stack: {:?}\n", lex(&file_string));
-    // print!("Stack: {:?}\n", evaluate(&file_string));
-
 }
 
-// enum ParseState {
-//     WhitespaceOrParen,
-//     FunctionName(String),
-//     FunctionArg(String),
-//     WhitespaceOrArgOrParen,
-// }
-//
-// enum ParseElement {
-//     Argument(String),
-//     Function(String)
-// }
-
-impl fmt::Debug for ParseElement {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &ParseElement::Argument(ref name) => write!(f, "A:{}", name),
-            &ParseElement::Function(ref name) => write!(f, "F:{}", name)
-        }
-
-    }
-}
 
 #[derive(Debug)]
 enum LexElement {
@@ -188,93 +165,6 @@ fn is_number(c: &str) -> bool {
         _ => false
     }
 }
-//
-// fn evaluate(s: &str) -> Vec<ParseElement> {
-//     let mut func_stack = Vec::new();
-//     let mut parse_stack = Vec::new();
-//     let mut state = ParseState::WhitespaceOrParen;
-//     for c in UnicodeSegmentation::graphemes(s, true) {
-//         match state {
-//             ParseState::WhitespaceOrParen => {
-//                 println!("WhitespaceOrParen: {}", c);
-//                 match c {
-//                     "(" => { //start of function
-//                         state = ParseState::FunctionName(String::new())
-//                     }
-//                     _ if is_whitespace(c) => { //
-//
-//                     }
-//                     _ => {
-//                         panic!("Parse Error on character [{}]", c)
-//                     }
-//                 }
-//             }
-//             ParseState::FunctionName(mut name) => {
-//                 println!("FunctionName: {}", c);
-//                 match c {
-//                     ")" => {
-//                         state = ParseState::WhitespaceOrParen;
-//                         parse_stack.push(ParseElement::Function(name));
-//                     }
-//                     _ if is_whitespace(c) => {
-//                         func_stack.push(name);
-//                         state = ParseState::WhitespaceOrArgOrParen;
-//                     }
-//                     c => {
-//                         name.push_str(c);
-//                         state = ParseState::FunctionName(name);
-//                     }
-//                 }
-//             }
-//             ParseState::FunctionArg(mut arg) => {
-//                 println!("FunctionArg: {}", c);
-//                 match c {
-//                     ")" => { // func is over, next func
-//                         parse_stack.push(ParseElement::Argument(arg));
-//                         let func = match func_stack.pop() {
-//                             Some(f) => f,
-//                             None => panic!("Error in function parsing, extra parentheses?")
-//                         };
-//                         parse_stack.push(ParseElement::Function(func));
-//                         if func_stack.len()
-//                         state = ParseState::WhitespaceOrParen;
-//                     }
-//                     _ if is_whitespace(c) => { //arg is over, next arg
-//                         parse_stack.push(ParseElement::Argument(arg));
-//                         state = ParseState::WhitespaceOrArgOrParen;
-//                     }
-//                     _ => { // next glyph
-//                         arg.push_str(c);
-//                         state = ParseState::FunctionArg(arg);
-//                     }
-//                 }
-//             }
-//             ParseState::WhitespaceOrArgOrParen => {
-//                 println!("WhitespaceOrArgOrParen: {}", c);
-//                 match c {
-//                     ")" => {
-//                         let func = match func_stack.pop() {
-//                             Some(f) => f,
-//                             None => panic!("Error in function parsing, extra parentheses?")
-//                         };
-//                         parse_stack.push(ParseElement::Function(func));
-//                         state = ParseState::WhitespaceOrParen;
-//                     }
-//                     "(" => {
-//                         state = ParseState::FunctionName(String::new());
-//                     }
-//                     _ if is_whitespace(c) => {
-//                         state = ParseState::WhitespaceOrArgOrParen;
-//                     }
-//                     _ => {
-//                         state = ParseState::FunctionArg(String::from(c));
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     return parse_stack;
-// }
 
 fn is_whitespace(c: &str) -> bool {
     match c {
