@@ -5,8 +5,10 @@ use std::path::Path;
 use std::string::String;
 
 mod lex;
-
 use lex::lex;
+mod parse;
+mod eval;
+use parse::parse;
 
 fn main() {
     println!("Reading File");
@@ -25,5 +27,9 @@ fn main() {
         Ok(_) => {}
     }
     print!("File: \n{}", file_string);
-    print!("Stack: {:?}\n", lex(&file_string));
+    let tokens = lex(&file_string);
+    print!("Stack: {:?}\n", tokens);
+    let list = parse(tokens);
+    print!("Lists: {:#?}\n", list);
+    print!("IDK: {:#?}\n", eval::eval(list))
 }

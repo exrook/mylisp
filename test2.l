@@ -1,2 +1,4 @@
-(print (nest "nested function" (nest2 nested func 2 ) yee ) yee yee (func3 sa) sa )
-((myfuncfunc sad2 2.20) asd s22ss "sda233sfd")
+(print (print "nested function" (print nested func 2 ) yee ) yee yee (print sa) sa )
+
+(print (,(+ 2 2.20) asd s22ss "sda233sfd"))
+# comments work!

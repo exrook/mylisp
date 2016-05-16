@@ -103,6 +103,10 @@ pub fn lex(s: &str) -> Vec<LexElement> {
                                 lex_stack.push(LexElement::CloseParen);
                                 LexState::Normal
                             }
+                            "(" => {
+                                lex_stack.push(LexElement::OpenParen);
+                                LexState::Normal
+                            }
                             _ if is_whitespace(c) => {
                                 LexState::Normal
                             }
@@ -118,6 +122,11 @@ pub fn lex(s: &str) -> Vec<LexElement> {
                     ")" => {
                         lex_stack.push(LexElement::Token(string));
                         lex_stack.push(LexElement::CloseParen);
+                        LexState::Normal
+                    }
+                    "(" => {
+                        lex_stack.push(LexElement::Token(string));
+                        lex_stack.push(LexElement::OpenParen);
                         LexState::Normal
                     }
                     "\"" => {
